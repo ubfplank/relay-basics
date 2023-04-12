@@ -6,7 +6,7 @@ import {
   FetchFunction,
 } from "relay-runtime";
 
-const HTTP_ENDPOINT = "http://localhost:5000/graphql";
+const HTTP_ENDPOINT = "http://localhost:4000";
 
 const fetchFn: FetchFunction = async (request, variables) => {
   const resp = await fetch(HTTP_ENDPOINT, {
@@ -15,10 +15,9 @@ const fetchFn: FetchFunction = async (request, variables) => {
       Accept:
         "application/graphql-response+json; charset=utf-8, application/json; charset=utf-8",
       "Content-Type": "application/json",
-      // <-- Additional headers like 'Authorization' would go here
     },
     body: JSON.stringify({
-      query: request.text, // <-- The GraphQL document composed by Relay
+      query: request.text, 
       variables,
     }),
   });
@@ -38,13 +37,10 @@ let relayEnvironment: Environment | undefined;
 export function initRelayEnvironment() {
   const environment = relayEnvironment ?? createRelayEnvironment();
 
-  // For SSG and SSR always create a new Relay environment.
   if (typeof window === "undefined") {
     return environment;
   }
 
-  // Create the Relay environment once in the client
-  // and then reuse it.
   if (!relayEnvironment) {
     relayEnvironment = environment;
   }
